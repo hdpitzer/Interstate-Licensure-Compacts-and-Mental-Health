@@ -1,0 +1,116 @@
+clear all 
+
+global wd "/Users/Student/Library/CloudStorage/OneDrive-Emory/03 Fall 2024/Interstate Licensure"
+
+
+** Demographics
+use "${wd}/data/input/controls/demographics_acs/demographics_2019", clear
+
+rename perc_black black2019
+rename perc_hispanic hisp2019
+
+drop if state=="NAME"
+drop if state=="Geographic Area Name"
+
+destring black2019, replace
+destring hisp2019, replace
+
+merge 1:1 state using "${wd}/data/input/controls/demographics_acs/demographics_2021", keep(1 3) nogen
+
+rename perc_black black2021
+rename perc_hispanic hisp2021
+
+destring black2021, replace
+destring hisp2021, replace
+
+gen perc_black = (black2019+black2021)/2
+gen perc_hispanic = (hisp2019+hisp2021)/2
+
+replace year=2020
+
+keep state year perc_black perc_hispanic
+order state perc_black perc_hispanic year
+
+save "${wd}/data/input/controls/demographics_acs/demographics_2020", replace
+
+
+** Employment
+use "${wd}/data/input/controls/employment_acs/employment_2019", clear
+
+rename perc_unemp v2019
+
+drop if state=="NAME"
+drop if state=="Geographic Area Name"
+
+destring v2019, replace
+
+merge 1:1 state using "${wd}/data/input/controls/employment_acs/employment_2021", keep(1 3) nogen
+
+rename perc_unemp v2021
+destring v2021, replace
+
+gen perc_unemp = (v2019+v2021)/2
+
+replace year=2020
+
+keep state year perc_unemp
+order state perc_unemp year
+
+save "${wd}/data/input/controls/employment_acs/employment_2020", replace
+
+
+** Insurance
+use "${wd}/data/input/controls/insurance_acs/insurance_2019", clear
+
+rename perc_uninsured v2019
+
+drop if state=="NAME"
+drop if state=="Geographic Area Name"
+
+destring v2019, replace
+
+merge 1:1 state using "${wd}/data/input/controls/insurance_acs/insurance_2021", keep(1 3) nogen
+
+rename perc_uninsured v2021
+
+destring v2021, replace
+
+gen perc_uninsured = (v2019+v2021)/2
+
+replace year=2020
+
+keep state year perc_uninsured
+order state perc_uninsured year
+
+save "${wd}/data/input/controls/insurance_acs/insurance_2020", replace
+
+
+** Internet
+use "${wd}/data/input/controls/internet_acs/internet_2019", clear
+
+rename total_pop tot2019
+rename no_internet_pop ni2019
+
+drop if state=="NAME"
+drop if state=="Geographic Area Name"
+
+destring tot2019, replace
+destring ni2019, replace
+
+merge 1:1 state using "${wd}/data/input/controls/internet_acs/internet_2021", keep(1 3) nogen
+
+rename total_pop tot2021
+rename no_internet_pop ni2021
+
+destring tot2021, replace
+destring ni2021, replace
+
+gen total_pop = (tot2019+tot2021)/2
+gen no_internet_pop = (ni2019+ni2021)/2
+
+replace year=2020
+
+keep state year total_pop no_internet_pop
+order state total_pop no_internet_pop year
+
+save "${wd}/data/input/controls/internet_acs/internet_2020", replace

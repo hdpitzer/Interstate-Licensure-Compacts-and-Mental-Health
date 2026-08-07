@@ -1,0 +1,21 @@
+
+clear all
+
+global wd "/Users/Student/Library/CloudStorage/OneDrive-Emory/03 Fall 2024/Interstate Licensure"
+
+use "${wd}/data/output/clean_brfss_2011_2023_compact.dta", clear
+
+
+bysort year: egen mean_menthlth = mean(menthlth)
+
+twoway line mean_menthlth year
+
+
+
+bysort year: egen mean_menthlth1 = mean(menthlth) if depev==1
+
+twoway line mean_menthlth1 year
+
+
+twoway line mean_menthlth mean_menthlth1 year
+

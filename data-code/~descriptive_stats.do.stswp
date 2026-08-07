@@ -1,0 +1,38 @@
+
+clear all
+
+global wd "/Users/Student/Library/CloudStorage/OneDrive-Emory/03 Fall 2024/Interstate Licensure"
+
+use "${wd}/data/output/clean_brfss_2011_2023_compact.dta", clear
+
+
+merge m:1 year using "${wd}/data/input/suiciderate_cdc.dta", keep(1 3) nogen
+
+twoway line rateper100000 year
+
+
+bysort year: egen mean_menthlth = mean(menthlth)
+
+twoway line mean_menthlth rateper100000 year
+
+
+* Summary Stats 
+collect clear 
+table () (depev), statistic(mean menthlth nobaddays mdd14 mdd21 imlc_enacted_dd psypact_active_dd /*hpsa*/) nformat(%03.2f)
+
+collect rename Table table1
+collect label levels depev 0 "Never Diagnosed with Depression" 1 "Ever Diagnosed with Depression" 
+
+
+table () (depev), statistic(frequency) nformat(%9.0fc)
+ 
+collect rename Table table2
+collect label levels depev 0 "Never Diagnosed with Depression" 1 "Ever Diagnosed with Depression" 
+
+collect combine table= table1 table2
+collect style cell result[frequency], name(table) nformat(%9.0fc)
+
+
+
+
+
